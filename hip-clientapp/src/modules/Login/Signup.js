@@ -1,0 +1,247 @@
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  IconButton,
+  Link,
+  MenuItem,
+  TextField,
+} from "@mui/material";
+import React, { useState } from "react";
+import UpdatePassword from "./UpdatePassword";
+import Login from "./Login";
+import { deepOrange, deepPurple } from "@mui/material/colors";
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import { validateEmail, validateText } from "../../Helper/Validations";
+import axios from "axios";
+import { post } from "../../Helper/CommonAPI";
+import { useNavigate } from "react-router-dom";
+
+function Signup() {
+  const navigate = useNavigate();
+  const [roles, setroles] = useState([
+    { roleId: 1, roleName: "Admin" },
+    { roleId: 2, roleName: "Doctor" },
+    { roleId: 3, roleName: "Nurse" },
+  ]);
+
+  const [signUpData, setSignUpData] = useState({
+    name: "",
+    email: "",
+    role: "",
+  });
+
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  //onchange function
+  const onInputChange = (event) => {
+    // console.log(event.target);
+    setSignUpData({ ...signUpData, [event.target.name]: event.target.value });
+  };
+
+  const onSignUpSubmit = (event) => {
+    // console.log(signUpData);
+    // if (validateFields()) {
+    //   var data = JSON.stringify({
+    //     email: signUpData.email,
+    //     fullname: signUpData.name,
+    //     role: "hadmin",
+    //     username: signUpData.email,
+    //   });
+
+    //   axios({
+    //     method: "post",
+    //     url: `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     data: data,
+    //   })
+    //     .then(function (response) {
+    //       if(response.status === 201){
+    navigate("/updatePassword", { replace: true });
+    //   }
+    //   console.log(JSON.stringify(response.data));
+    // })
+    // .catch(function (error) {
+    //   console.log(error);
+    // });
+    // }
+
+    event.preventDefault();
+  };
+
+  const validateFields = () => {
+    debugger;
+    let { name, email, role } = signUpData;
+    setError(false);
+    if (name === "" || email === "" || !Boolean(role)) {
+      setError(true);
+      setErrorMsg("Please provide values for required fields!");
+      return false;
+    } else {
+      //validate
+      if (!validateEmail(email)) {
+        setError(true);
+        setErrorMsg("Please provide valid email");
+        return false;
+      }
+      if (!validateText(name)) {
+        setError(true);
+        setErrorMsg("Please provide valid name");
+        return false;
+      }
+      if (!Boolean(role)) {
+        setError(true);
+        setErrorMsg("Select role");
+        return false;
+      }
+
+      setError(false);
+      setErrorMsg("");
+      return true;
+    }
+  };
+
+  return (
+    <Grid
+      container
+      justifyContent={"center"}
+      alignItems={"center"}
+      sx={{
+        "& .MuiTextField-root": { mb: 2 },
+        "& .MuiButton-root": { p: 1 },
+        "& .MuiIconButton-root": { m: 2 },
+        height: "100vh",
+      }}
+      className="bannerImage"
+    >
+      <Grid item>
+        <Card>
+          <Grid container justifyContent="center">
+            <Grid item>
+              <h1>Sign Up</h1>
+            </Grid>
+          </Grid>
+
+          <CardContent>
+            <Grid container justifyContent={"center"}>
+              <Grid item>
+                {error && <span style={{ color: "red" }}>{errorMsg}</span>}
+              </Grid>
+            </Grid>
+            <Grid container justifyContent={"center"}>
+              <Grid item>
+                <IconButton aria-label="google" color="secondary" size="large">
+                  <GoogleIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="facebook"
+                  color="secondary"
+                  size="large"
+                >
+                  <FacebookIcon />
+                </IconButton>
+                <IconButton aria-label="github" color="secondary" size="large">
+                  <GitHubIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Divider>
+              <Avatar sx={{ bgcolor: deepOrange[500], m: 1 }}>OR</Avatar>
+            </Divider>
+            <form onSubmit={onSignUpSubmit}>
+              <Grid container>
+                <Grid item xs={12} sm={12} md={12}>
+                  <Grid container>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Name"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={signUpData.name}
+                        onChange={onInputChange}
+                        name="name"
+                        error={error && !Boolean(signUpData.name)}
+                        helperText={
+                          error &&
+                          !validateText(signUpData.name) &&
+                          "Name field should contain only alphabets."
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={signUpData.email}
+                        onChange={onInputChange}
+                        name="email"
+                        error={error && !Boolean(signUpData.email)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <TextField
+                        id="outlined-select-currency"
+                        select
+                        label="Roles"
+                        fullWidth
+                        value={signUpData.role}
+                        onChange={onInputChange}
+                        name="role"
+                        error={error && !Boolean(signUpData.role)}
+                      >
+                        {roles.map((option) => (
+                          <MenuItem
+                            key={option.roleName}
+                            value={option.roleName}
+                          >
+                            {option.roleName}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={onSignUpSubmit}
+                      >
+                        Sign Up
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </form>
+
+            <Grid container justifyContent={"center"}>
+              <Grid item>
+                <Link href="/login" underline="none">
+                  <h4>Already a member?</h4>
+                </Link>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+  );
+}
+
+export default Signup;

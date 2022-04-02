@@ -1,0 +1,14 @@
+html,
+body {
+  margin: 0px;
+}
+
+#root {
+  height: 100vh;
+}
+
+.bannerImage {
+  background-image: url("/src/assets/images/hospital.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
