@@ -13,3 +13,8 @@ export const mobileNumber = (value) => {
   const regex = /[0-9]*$/;
   return value.match(regex);
 };
+
+export const validateUserName = (value) => {
+  const regex = /[0-9a-zA-Z@!$&]*$/;
+  return value.match(regex);
+};

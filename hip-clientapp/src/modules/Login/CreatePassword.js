@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   Button,
   FormControl,
   Grid,
@@ -14,9 +13,22 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 
 function UpdatePassword(props) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let emailID = searchParams.get("email");
+
+    if (Boolean(emailID)) {
+      setPassword({ ...passwordValues, email: emailID });
+    } else {
+      navigate("/", { replace: true });
+    }
+  }, []);
   const [passwordValues, setPassword] = useState({
     showPassword: false,
     password: "",
@@ -24,6 +36,22 @@ function UpdatePassword(props) {
   });
 
   const onPasswordChange = (event) => {
+    let data = {
+      email: passwordValues.email,
+      password: passwordValues.password,
+    };
+    // axios.post(
+    //   {
+    //     method: "post",
+    //     url: `${process.env.REACT_APP_BASE_URL}/huser/update-password/`,
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     data: data,
+    //   })
+    // .then(response => {
+    //   if(response.st)
+    // })
     setPassword({ ...passwordValues, [event.target.name]: event.target.value });
   };
 
@@ -35,6 +63,7 @@ function UpdatePassword(props) {
   };
 
   const onUpdatePassword = (event) => {
+    navigate("/login", { replace: true });
     event.preventDefault();
   };
   return (
@@ -55,7 +84,7 @@ function UpdatePassword(props) {
       <Card>
         <Grid container justifyContent="center">
           <Grid item>
-            <h1>Update Password</h1>
+            <h1>Create Password</h1>
           </Grid>
         </Grid>
         <CardContent>

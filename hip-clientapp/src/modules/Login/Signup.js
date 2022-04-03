@@ -1,10 +1,8 @@
 import {
   Avatar,
-  Box,
   Button,
   Card,
   CardContent,
-  CardHeader,
   Divider,
   Grid,
   IconButton,
@@ -13,29 +11,31 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useState } from "react";
-import UpdatePassword from "./UpdatePassword";
-import Login from "./Login";
-import { deepOrange, deepPurple } from "@mui/material/colors";
+import { deepOrange } from "@mui/material/colors";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { validateEmail, validateText } from "../../Helper/Validations";
-import axios from "axios";
-import { post } from "../../Helper/CommonAPI";
+import {
+  validateEmail,
+  validateText,
+  validateUserName,
+} from "../../Helper/Validations";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Signup() {
   const navigate = useNavigate();
   const [roles, setroles] = useState([
-    { roleId: 1, roleName: "Admin" },
-    { roleId: 2, roleName: "Doctor" },
-    { roleId: 3, roleName: "Nurse" },
+    { roleId: 1, roleName: "hadmin" },
+    { roleId: 2, roleName: "doctor" },
+    { roleId: 3, roleName: "huser" },
   ]);
 
   const [signUpData, setSignUpData] = useState({
     name: "",
     email: "",
     role: "",
+    userName: "",
   });
 
   const [error, setError] = useState(false);
@@ -47,43 +47,70 @@ function Signup() {
     setSignUpData({ ...signUpData, [event.target.name]: event.target.value });
   };
 
-  const onSignUpSubmit = (event) => {
-    // console.log(signUpData);
-    // if (validateFields()) {
-    //   var data = JSON.stringify({
-    //     email: signUpData.email,
-    //     fullname: signUpData.name,
-    //     role: "hadmin",
-    //     username: signUpData.email,
-    //   });
+  const onSignUpSubmit = async (event) => {
+    try {
+      console.log(signUpData);
+      if (validateFields()) {
+        var data = JSON.stringify({
+          email: signUpData.email,
+          fullname: signUpData.name,
+          role: "hadmin",
+          username: signUpData.email,
+        });
 
-    //   axios({
-    //     method: "post",
-    //     url: `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     data: data,
-    //   })
-    //     .then(function (response) {
-    //       if(response.status === 201){
-    navigate("/updatePassword", { replace: true });
-    //   }
-    //   console.log(JSON.stringify(response.data));
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    // });
-    // }
+        // axios({
+        //   method: "post",
+        //   url: `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   data: data,
+        // })
+        let response = await fetch(
+          `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: data,
+          }
+        );
 
-    event.preventDefault();
+        let responseData = response.json();
+        console.log(responseData);
+        // .then((resp) => resp.json())
+        // .then((response) => {
+        //   console.log(repsonse);
+        //   return response.data;
+        // console.log(response);
+        // if (response.status === 200) {
+        //   navigate(`/createPassword?email=${signUpData.email}`, {
+        //     replace: true,
+        //   });
+        // } else {
+        //   //error message
+        //   setError(true);
+        //   setErrorMsg(response.message);
+        // }
+        // console.log(JSON.stringify(response.data));
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
+      }
+
+      event.preventDefault();
+    } catch (ex) {
+      console.log(ex);
+    }
   };
 
   const validateFields = () => {
     debugger;
-    let { name, email, role } = signUpData;
+    let { name, email, role, userName } = signUpData;
     setError(false);
-    if (name === "" || email === "" || !Boolean(role)) {
+    if (name === "" || email === "" || !Boolean(role) || userName === "") {
       setError(true);
       setErrorMsg("Please provide values for required fields!");
       return false;
@@ -102,6 +129,12 @@ function Signup() {
       if (!Boolean(role)) {
         setError(true);
         setErrorMsg("Select role");
+        return false;
+      }
+
+      if (!validateUserName(userName)) {
+        setError(true);
+        setErrorMsg("User Name already exist");
         return false;
       }
 
@@ -195,6 +228,34 @@ function Signup() {
                     </Grid>
                     <Grid item xs={12} sm={12} md={12}>
                       <TextField
+                        id="outlined-basic"
+                        label="User Name"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={signUpData.userName}
+                        onChange={onInputChange}
+                        name="userName"
+                        error={error && !Boolean(signUpData.userName)}
+                        helperText={
+                          error &&
+                          !validateUserName(signUpData.userName) && (
+                            <>
+                              <span>
+                                Username should contain:
+                                <ul>
+                                  <li>Digits 0-9</li>
+                                  <li>Alphabets [a-z,A-Z]</li>
+                                  <li>Special Character [&,!,$,@]</li>
+                                </ul>
+                              </span>
+                            </>
+                          )
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <TextField
                         id="outlined-select-currency"
                         select
                         label="Roles"
@@ -202,6 +263,7 @@ function Signup() {
                         value={signUpData.role}
                         onChange={onInputChange}
                         name="role"
+                        required
                         error={error && !Boolean(signUpData.role)}
                       >
                         {roles.map((option) => (
