@@ -15,6 +15,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { updatePassword } from "../../Helper/UsersAPI";
+import CustomAlert from "../../components/CustomAlert";
 
 function UpdatePassword(props) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,29 +31,19 @@ function UpdatePassword(props) {
       navigate("/", { replace: true });
     }
   }, []);
+
+  //states
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [success, setSuccess] = useState(false);
   const [passwordValues, setPassword] = useState({
     showPassword: false,
     password: "",
     email: "",
   });
 
+  //functions
   const onPasswordChange = (event) => {
-    let data = {
-      email: passwordValues.email,
-      password: passwordValues.password,
-    };
-    // axios.post(
-    //   {
-    //     method: "post",
-    //     url: `${process.env.REACT_APP_BASE_URL}/huser/update-password/`,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     data: data,
-    //   })
-    // .then(response => {
-    //   if(response.st)
-    // })
     setPassword({ ...passwordValues, [event.target.name]: event.target.value });
   };
 
@@ -63,7 +55,29 @@ function UpdatePassword(props) {
   };
 
   const onUpdatePassword = (event) => {
-    navigate("/login", { replace: true });
+    if (passwordValues.password === "") {
+      setError(true);
+      setErrorMsg("Please enter a password to proceed");
+    } else {
+      if (passwordValues.password.length < 6) {
+        setError(true);
+        setErrorMsg("Please enter atleast 6 characters password to proceed");
+      } else {
+        setError(false);
+        setErrorMsg("");
+        let data = {
+          email: passwordValues.email,
+          password: passwordValues.password,
+        };
+        // updatePassword(data)
+        // .then(respData => {
+        //   respData
+        // navigate("/login", { replace: true });
+        // })
+        // .catch(ex => cosole.log(ex))
+      }
+    }
+
     event.preventDefault();
   };
   return (
@@ -88,6 +102,11 @@ function UpdatePassword(props) {
           </Grid>
         </Grid>
         <CardContent>
+          <Grid container justifyContent={"center"}>
+            <Grid item>
+              {error && <CustomAlert severity={"error"} msg={errorMsg} />}
+            </Grid>
+          </Grid>
           <form onSubmit={onUpdatePassword}>
             <Grid conatiner>
               <Grid item xs={12} sm={12} md={12}>
@@ -104,7 +123,7 @@ function UpdatePassword(props) {
                 />
               </Grid>
               <Grid item xs={12} sm={12} md={12}>
-                <FormControl sx={{}} variant="outlined" fullWidth>
+                <FormControl variant="outlined" fullWidth>
                   <InputLabel htmlFor="outlined-adornment-password">
                     Password
                   </InputLabel>

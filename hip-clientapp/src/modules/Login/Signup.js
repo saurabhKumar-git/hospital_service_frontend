@@ -15,13 +15,17 @@ import { deepOrange } from "@mui/material/colors";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import LinearProgress from "@mui/material/LinearProgress";
 import {
   validateEmail,
   validateText,
   validateUserName,
 } from "../../Helper/Validations";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import CustomAlert from "../../components/CustomAlert";
+import { signup } from "../../Helper/UsersAPI";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/Info";
 
 function Signup() {
   const navigate = useNavigate();
@@ -40,6 +44,7 @@ function Signup() {
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [loader, setLoader] = useState(false);
 
   //onchange function
   const onInputChange = (event) => {
@@ -48,61 +53,30 @@ function Signup() {
   };
 
   const onSignUpSubmit = async (event) => {
-    try {
-      console.log(signUpData);
-      if (validateFields()) {
-        var data = JSON.stringify({
-          email: signUpData.email,
-          fullname: signUpData.name,
-          role: "hadmin",
-          username: signUpData.email,
-        });
+    event.preventDefault();
+    setLoader(true);
+    console.log(signUpData);
+    if (validateFields()) {
+      var data = JSON.stringify({
+        email: signUpData.email,
+        fullname: signUpData.name,
+        role: "hadmin",
+        username: signUpData.email,
+      });
 
-        // axios({
-        //   method: "post",
-        //   url: `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   data: data,
-        // })
-        let response = await fetch(
-          `${process.env.REACT_APP_BASE_URL}/huser/create-user/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: data,
+      signup(data)
+        .then((result) => {
+          if (result.status === "400") {
+            setError(true);
+            setErrorMsg(result.message);
+            setLoader(false);
+          } else {
+            setLoader(false);
           }
-        );
-
-        let responseData = response.json();
-        console.log(responseData);
-        // .then((resp) => resp.json())
-        // .then((response) => {
-        //   console.log(repsonse);
-        //   return response.data;
-        // console.log(response);
-        // if (response.status === 200) {
-        //   navigate(`/createPassword?email=${signUpData.email}`, {
-        //     replace: true,
-        //   });
-        // } else {
-        //   //error message
-        //   setError(true);
-        //   setErrorMsg(response.message);
-        // }
-        // console.log(JSON.stringify(response.data));
-        // })
-        // .catch(function (error) {
-        //   console.log(error);
-        // });
-      }
-
-      event.preventDefault();
-    } catch (ex) {
-      console.log(ex);
+        })
+        .catch((error) => console.log("error", error));
+    } else {
+      setLoader(false);
     }
   };
 
@@ -159,6 +133,7 @@ function Signup() {
     >
       <Grid item>
         <Card>
+          {loader && <LinearProgress sx={{ height: "6px" }} />}
           <Grid container justifyContent="center">
             <Grid item>
               <h1>Sign Up</h1>
@@ -168,7 +143,7 @@ function Signup() {
           <CardContent>
             <Grid container justifyContent={"center"}>
               <Grid item>
-                {error && <span style={{ color: "red" }}>{errorMsg}</span>}
+                {error && <CustomAlert severity={"error"} msg={errorMsg} />}
               </Grid>
             </Grid>
             <Grid container justifyContent={"center"}>
@@ -238,8 +213,7 @@ function Signup() {
                         name="userName"
                         error={error && !Boolean(signUpData.userName)}
                         helperText={
-                          error &&
-                          !validateUserName(signUpData.userName) && (
+                          (error && !Boolean(signUpData.userName)) || (
                             <>
                               <span>
                                 Username should contain:
