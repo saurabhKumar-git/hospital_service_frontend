@@ -23,7 +23,7 @@ import {
 } from "../../Helper/Validations";
 import { useNavigate } from "react-router-dom";
 import CustomAlert from "../../components/CustomAlert";
-import { signup } from "../../Helper/UsersAPI";
+import { signup } from "../../ApiHelper/UsersAPI";
 
 function Signup() {
   const navigate = useNavigate();

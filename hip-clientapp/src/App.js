@@ -5,17 +5,20 @@ import MainLayout from "./layout/MainLayout";
 import RoutesRoot from "./routes/RoutesRoot";
 import "./css/main.css";
 import Signup from "./modules/Login/Signup";
+import { AuthProvider } from "./Helper/AuthProvider";
 
 class App extends Component {
   render() {
     //Add Browser Route
     return (
-      <Container maxWidth="false" disableGutters>
-        <BrowserRouter>
-          <RoutesRoot />
-        </BrowserRouter>
-        {/* <Signup /> */}
-      </Container>
+      <AuthProvider>
+        <Container maxWidth="false" disableGutters>
+          <BrowserRouter>
+            <RoutesRoot />
+          </BrowserRouter>
+          {/* <Signup /> */}
+        </Container>
+      </AuthProvider>
     );
   }
 }

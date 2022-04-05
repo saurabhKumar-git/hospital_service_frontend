@@ -14,8 +14,7 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import { updatePassword } from "../../Helper/UsersAPI";
+import { updatePassword } from "../../ApiHelper/UsersAPI";
 import CustomAlert from "../../components/CustomAlert";
 
 function UpdatePassword(props) {
