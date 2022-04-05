@@ -24,8 +24,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import CustomAlert from "../../components/CustomAlert";
 import { signup } from "../../Helper/UsersAPI";
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
 
 function Signup() {
   const navigate = useNavigate();
