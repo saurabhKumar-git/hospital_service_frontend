@@ -28,6 +28,8 @@ function UpdatePassword(props) {
     email: "",
   });
 
+  const [loader, setLoader] = useState(false);
+
   const onPasswordChange = (event) => {
     setPassword({ ...passwordValues, [event.target.name]: event.target.value });
   };
@@ -58,6 +60,7 @@ function UpdatePassword(props) {
     >
       <Grid item>
         <Card>
+          {loader && <LinearProgress sx={{ height: "6px" }} />}
           <Grid container justifyContent="center">
             <Grid item>
               <h1>Login</h1>
