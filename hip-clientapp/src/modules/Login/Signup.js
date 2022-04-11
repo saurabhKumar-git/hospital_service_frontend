@@ -64,7 +64,7 @@ function Signup() {
 
       signup(data)
         .then((result) => {
-          if (result.status === "400") {
+          if (result.status === 400) {
             setError(true);
             setErrorMsg(result.message);
             setLoader(false);

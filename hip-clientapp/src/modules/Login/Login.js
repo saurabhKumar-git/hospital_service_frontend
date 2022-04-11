@@ -13,6 +13,7 @@ import {
   Avatar,
   Divider,
   Link,
+  LinearProgress,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -20,8 +21,13 @@ import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { deepOrange, deepPurple } from "@mui/material/colors";
+import CustomAlert from "../../components/CustomAlert";
+import { loginUser } from "../../ApiHelper/UsersAPI";
+import { useNavigate } from "react-router-dom";
 
-function UpdatePassword(props) {
+const Login = (props) => {
+  const navigate = useNavigate();
+
   const [passwordValues, setPassword] = useState({
     showPassword: false,
     password: "",
@@ -29,6 +35,9 @@ function UpdatePassword(props) {
   });
 
   const [loader, setLoader] = useState(false);
+
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const onPasswordChange = (event) => {
     setPassword({ ...passwordValues, [event.target.name]: event.target.value });
@@ -42,7 +51,32 @@ function UpdatePassword(props) {
   };
 
   const onUpdatePassword = (event) => {
+    setLoader(true);
     event.preventDefault();
+
+    let { password, email } = passwordValues;
+    if (email === "" || password === "") {
+      setLoader(false);
+      setError(true);
+      setErrorMsg("Please provide required fields value");
+    } else {
+      setError(false);
+      setErrorMsg("");
+      console.log({ email, password });
+      loginUser({ email, password })
+        .then((respData) => {
+          if (respData.status === 200) {
+            //navigate to dashboard and set Auth login
+            setLoader(false);
+            navigate("/home", { replace: true });
+          } else {
+            setLoader(false);
+            setError(true);
+            setErrorMsg(respData.message);
+          }
+        })
+        .catch((error) => console.log("error", error));
+    }
   };
   return (
     <Grid
@@ -64,6 +98,11 @@ function UpdatePassword(props) {
           <Grid container justifyContent="center">
             <Grid item>
               <h1>Login</h1>
+            </Grid>
+          </Grid>
+          <Grid container justifyContent={"center"}>
+            <Grid item>
+              {error && <CustomAlert severity={"error"} msg={errorMsg} />}
             </Grid>
           </Grid>
           <CardContent>
@@ -99,10 +138,16 @@ function UpdatePassword(props) {
                     value={passwordValues.email}
                     onChange={onPasswordChange}
                     name="email"
+                    error={error && !Boolean(passwordValues.email)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} md={12}>
-                  <FormControl sx={{}} variant="outlined" fullWidth>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    error={error && !Boolean(passwordValues.password)}
+                    required
+                  >
                     <InputLabel htmlFor="outlined-adornment-password">
                       Password
                     </InputLabel>
@@ -146,7 +191,12 @@ function UpdatePassword(props) {
                 </Grid>
               </Grid>
             </form>
-            <Grid container justifyContent={"center"}>
+            <Grid container justifyContent={"space-between"}>
+              <Grid item>
+                <Link href="/forgot-password" underline="none">
+                  <h4 style={{ color: "red" }}>Forgot Password?</h4>
+                </Link>
+              </Grid>
               <Grid item>
                 <Link href="/signup" underline="none">
                   <h4>Register</h4>
@@ -158,6 +208,6 @@ function UpdatePassword(props) {
       </Grid>
     </Grid>
   );
-}
+};
 
-export default UpdatePassword;
+export default Login;
