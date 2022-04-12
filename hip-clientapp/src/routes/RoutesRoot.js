@@ -5,6 +5,7 @@ import Login from "../modules/Login/Login";
 import CreatePassword from "../modules/Login/CreatePassword";
 import { useAuth } from "../Helper/AuthProvider";
 import MainLayout from "../layout/MainLayout";
+import NotFound from "../modules/Errors/NotFound";
 
 const RoutesRoot = () => {
   const auth = useAuth();
@@ -14,26 +15,19 @@ const RoutesRoot = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/createPassword" element={<CreatePassword />} />
-        {/* {auth.user && ( */}
-        {/* <MainLayout> */}
-        <Route
-          path="/home"
-          element={
-            <>
-              <h2>Hello user</h2>
-            </>
-          }
-        />
-        {/* </MainLayout> */}
-        {/* )} */}
-        <Route
-          path="*"
-          element={
-            <main style={{ padding: "1rem" }}>
-              <p>There's nothing here!</p>
-            </main>
-          }
-        />
+        {auth.user && (
+          <Route path="/" element={<MainLayout />}>
+            <Route
+              path=""
+              element={
+                <main style={{ padding: "1rem" }}>
+                  <p>Hello layout</p>
+                </main>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        )}
       </Routes>
     </>
   );
