@@ -6,10 +6,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = (user) => {
+    console.log("login", user);
     setUser(user);
   };
 
   const logout = () => {
+    console.log("logout", user);
     setUser(null);
   };
 

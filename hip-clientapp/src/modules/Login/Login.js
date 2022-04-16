@@ -24,9 +24,11 @@ import { deepOrange, deepPurple } from "@mui/material/colors";
 import CustomAlert from "../../components/CustomAlert";
 import { loginUser } from "../../ApiHelper/UsersAPI";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Helper/AuthProvider";
 
 const Login = (props) => {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const [passwordValues, setPassword] = useState({
     showPassword: false,
@@ -67,6 +69,7 @@ const Login = (props) => {
         .then((respData) => {
           if (respData.status === 200) {
             //navigate to dashboard and set Auth login
+            auth.login(respData);
             setLoader(false);
             navigate("/home", { replace: true });
           } else {
