@@ -23,9 +23,7 @@ import {
 } from "../../Helper/Validations";
 import { useNavigate } from "react-router-dom";
 import CustomAlert from "../../components/CustomAlert";
-import { signup } from "../../Helper/UsersAPI";
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import { signup } from "../../ApiHelper/UsersAPI";
 
 function Signup() {
   const navigate = useNavigate();
@@ -66,7 +64,7 @@ function Signup() {
 
       signup(data)
         .then((result) => {
-          if (result.status === "400") {
+          if (result.status === 400) {
             setError(true);
             setErrorMsg(result.message);
             setLoader(false);

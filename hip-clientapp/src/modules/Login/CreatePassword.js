@@ -10,12 +10,12 @@ import {
   TextField,
   Card,
   CardContent,
+  Divider,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import { updatePassword } from "../../Helper/UsersAPI";
+import { updatePassword } from "../../ApiHelper/UsersAPI";
 import CustomAlert from "../../components/CustomAlert";
 
 function UpdatePassword(props) {
@@ -61,7 +61,7 @@ function UpdatePassword(props) {
     } else {
       if (passwordValues.password.length < 6) {
         setError(true);
-        setErrorMsg("Please enter atleast 6 characters password to proceed");
+        setErrorMsg("Please enter atleast 6 characters password");
       } else {
         setError(false);
         setErrorMsg("");
@@ -69,12 +69,17 @@ function UpdatePassword(props) {
           email: passwordValues.email,
           password: passwordValues.password,
         };
-        // updatePassword(data)
-        // .then(respData => {
-        //   respData
-        // navigate("/login", { replace: true });
-        // })
-        // .catch(ex => cosole.log(ex))
+        updatePassword(data)
+          .then((respData) => {
+            if (respData.status === 200) {
+              respData;
+              navigate("/login", { replace: true });
+            } else {
+              setError(true);
+              setErrorMsg(respData.message);
+            }
+          })
+          .catch((ex) => cosole.log(ex));
       }
     }
 
@@ -88,7 +93,7 @@ function UpdatePassword(props) {
       sx={{
         "& .MuiTextField-root": { mb: 2 },
         "& .MuiButton-root": { p: 1 },
-        "& 	.MuiFormControl-root": { mb: 2 },
+        "& .MuiFormControl-root": { mb: 2 },
         height: "100vh",
       }}
       noValidate
@@ -101,72 +106,76 @@ function UpdatePassword(props) {
             <h1>Create Password</h1>
           </Grid>
         </Grid>
+        <Grid container justifyContent={"center"}>
+          <Grid item>
+            {error && <CustomAlert severity={"error"} msg={errorMsg} />}
+          </Grid>
+        </Grid>
         <CardContent>
-          <Grid container justifyContent={"center"}>
+          <Grid container>
             <Grid item>
-              {error && <CustomAlert severity={"error"} msg={errorMsg} />}
+              <form onSubmit={onUpdatePassword}>
+                <Grid conatiner>
+                  <Grid item xs={12} sm={12} md={12}>
+                    <TextField
+                      id="outlined-basic"
+                      label="Email"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      value={passwordValues.email}
+                      onChange={onPasswordChange}
+                      name="email"
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12}>
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-adornment-password">
+                        Password
+                      </InputLabel>
+                      <OutlinedInput
+                        id="outlined-adornment-password"
+                        type={passwordValues.showPassword ? "text" : "password"}
+                        value={passwordValues.password}
+                        onChange={onPasswordChange}
+                        name="password"
+                        required
+                        fullWidth
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={onShowPassword}
+                              edge="end"
+                            >
+                              {passwordValues.showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        label="Password"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={12} sm={12} md={12}>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={onUpdatePassword}
+                      >
+                        Submit
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </form>
             </Grid>
           </Grid>
-          <form onSubmit={onUpdatePassword}>
-            <Grid conatiner>
-              <Grid item xs={12} sm={12} md={12}>
-                <TextField
-                  id="outlined-basic"
-                  label="Email"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={passwordValues.email}
-                  onChange={onPasswordChange}
-                  name="email"
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={passwordValues.showPassword ? "text" : "password"}
-                    value={passwordValues.password}
-                    onChange={onPasswordChange}
-                    name="password"
-                    required
-                    fullWidth
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={onShowPassword}
-                          edge="end"
-                        >
-                          {passwordValues.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                </FormControl>
-              </Grid>
-              <Grid container>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={onUpdatePassword}
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </Grid>
-            </Grid>
-          </form>
         </CardContent>
       </Card>
     </Grid>

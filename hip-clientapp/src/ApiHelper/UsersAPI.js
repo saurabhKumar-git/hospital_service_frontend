@@ -26,3 +26,16 @@ export const updatePassword = async (data) => {
     requestOptions
   ).then((response) => response.json());
 };
+
+export const loginUser = async (data) => {
+  let requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: data,
+    redirect: "follow",
+  };
+  return await fetch(
+    `${process.env.REACT_APP_BASE_URL}/huser/token/`,
+    requestOptions
+  ).then((response) => response.json());
+};

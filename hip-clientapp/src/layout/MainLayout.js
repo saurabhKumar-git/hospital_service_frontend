@@ -19,7 +19,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { Card, CardContent, Grid } from "@mui/material";
 import { Avatar } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { MenuData } from "../routes/Menu";
 
 const drawerWidth = 240;
@@ -77,12 +77,8 @@ export default function MainLayout(props) {
     setOpen(!open);
   };
 
-  //   const handleDrawerClose = () => {
-  //     setOpen(false);
-  //   };
-
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", marginTop: "5em" }}>
       {/* <CssBaseline /> */}
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -95,7 +91,7 @@ export default function MainLayout(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="h6">
             HIP
           </Typography>
         </Toolbar>
@@ -147,7 +143,9 @@ export default function MainLayout(props) {
       <Main open={open}>
         {/* <DrawerHeader /> */}
         <Card variant="outlined">
-          <CardContent>{props.children}</CardContent>
+          <CardContent>
+            <Outlet>{props.children}</Outlet>
+          </CardContent>
         </Card>
       </Main>
     </Box>
